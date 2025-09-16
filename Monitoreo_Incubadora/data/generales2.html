@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html class="no-js">
+
+<head>
+    <title>Monitoreo IoT</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <base href="">
+    <link href="bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+    <link href="jquery.easy-pie-chart.css" rel="stylesheet" media="screen">
+    <link href="styles.css" rel="stylesheet" media="screen">
+    <script src="modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <!-- MQTT.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js -->
+
+</head>
+
+<body>
+    <!-- EMPIEZA BARRA SUPERIOR -->
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <h>
+                    <div id="numero_incubadora" class="brand">Incubadora </div>
+                </h>
+                <div class="nav-collapse collapse">
+                    <ul class="nav pull-right">
+                        <li class="dropdown">
+                            <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                              </svg> Usuario <i class="caret"></i>
+
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a tabindex="-1" href="login.html">Cerrar sesión    <h><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="darkslategrey" class="bi bi-arrow-bar-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8m-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5"/>
+                                      </svg></h></a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="navbar-inner">
+                    <div class="center-icon">
+                        <a href="home2.html" id="home"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill=darkslategrey class="bi bi-house-fill" viewBox="0 0 16 16">
+                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/>
+                        <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293z"/>
+                      </svg></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--/. EMPIEZA BARRA -->
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
+                <li class="active">
+                    <a id="urlG" href=""><svg xmlns="http://www.w3.org/2000/svg" width="18 " height="18 " fill="currentColor " class="bi bi-info-circle " viewBox="0 0 16 16 ">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16 "/>
+                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2
+        0 1 1 0 0 1 2 0 "/>
+                          </svg>   Generales</a>
+                </li>
+                <li class=" ">
+                    <a id="urlT" href=""><svg xmlns="http://www.w3.org/2000/svg " width="20 " height="20 " fill="currentColor " class="bi bi-thermometer-half " viewBox="0 0 16 16 ">
+                            <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415 "/>
+                            <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1 "/>
+                          </svg>   Temperatura</a>
+                </li>
+                <li class=" ">
+                    <a id="urlH" href=""><svg xmlns="http://www.w3.org/2000/svg " width="20 " height="20 " fill="currentColor " class="bi bi-droplet " viewBox="0 0 16 16 ">
+                            <path fill-rule="evenodd " d="M7.21.8C7.69.295 8 0 8 0q.164.544.371 1.038c.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8m.413 1.021A31 31 0 0 0 5.794 3.99c-.726.95-1.436
+        2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z "/>
+                            <path fill-rule="evenodd " d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87z "/>
+                          </svg>   Humedad</a>
+                </li>
+                <li class=" ">
+                    <a id="urlI" href=""><svg xmlns="http://www.w3.org/2000/svg " width="20 " height="20 " fill="currentColor " class="bi bi-lightbulb " viewBox="0 0 16 16 ">
+                            <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0
+        0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1 "/>
+                          </svg>    Iluminancia </a>
+                </li>
+                <li class=" ">
+                    <a id="urlO" href=""><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-lungs" viewBox="0 0 16 16">
+                        <path d="M8.5 1.5a.5.5 0 1 0-1 0v5.243L7 7.1V4.72C7 3.77 6.23 3 5.28 3c-.524 0-1.023.27-1.443.592-.431.332-.847.773-1.216 1.229-.736.908-1.347 1.946-1.58 2.48-.176.405-.393 1.16-.556 2.011-.165.857-.283 1.857-.241 2.759.04.867.233 1.79.838 2.33.67.6 1.622.556 2.741-.004l1.795-.897A2.5 2.5 0 0 0 7 11.264V10.5a.5.5 0 0 0-1 0v.764a1.5 1.5 0 0 1-.83 1.342l-1.794.897c-.978.489-1.415.343-1.628.152-.28-.25-.467-.801-.505-1.63-.037-.795.068-1.71.224-2.525.157-.82.357-1.491.491-1.8.19-.438.75-1.4 1.44-2.25.342-.422.703-.799 1.049-1.065.358-.276.639-.385.833-.385a.72.72 0 0 1 .72.72v3.094l-1.79 1.28a.5.5 0 0 0 .58.813L8 7.614l3.21 2.293a.5.5 0 1 0 .58-.814L10 7.814V4.72a.72.72 0 0 1 .72-.72c.194 0 .475.11.833.385.346.266.706.643 1.05 1.066.688.85 1.248 1.811 1.439 2.249.134.309.334.98.491 1.8.156.814.26 1.73.224 2.525-.038.829-.224 1.38-.505 1.63-.213.19-.65.337-1.628-.152l-1.795-.897A1.5 1.5 0 0 1 10 11.264V10.5a.5.5 0 0 0-1 0v.764a2.5 2.5 0 0 0 1.382 2.236l1.795.897c1.12.56 2.07.603 2.741.004.605-.54.798-1.463.838-2.33.042-.902-.076-1.902-.24-2.759-.164-.852-.38-1.606-.558-2.012-.232-.533-.843-1.571-1.579-2.479-.37-.456-.785-.897-1.216-1.229C11.743 3.27 11.244 3 10.72 3 9.77 3 9 3.77 9 4.72V7.1l-.5-.357z"/>
+                      </svg>Oxígeno </a>
+                </li>
+            </ul>
+            <!--/. TERMINA BARRA -->
+        </div>
+    </div>
+
+    <div class="alert-container">
+
+        <!--/. EMPIEZA ALERTA T -->
+        <div class="span3">
+            <div class="alert oculto" id="ALERTA_T">
+                <svg xmlns="http://www.w3.org/2000/svg" id="warning_T" width="50" height="50" fill="#b94a48" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                <h4 class="alert" style="color:#b94a48">¡ALERTA!</h4>
+                <h class="leyenda" id="leyenda_T"></h>
+            </div>
+            <div class="alert oculto" id="ALERTA_T2">
+                <svg xmlns="http://www.w3.org/2000/svg" id="warning_T2" width="50" height="50" fill="rgb(212, 183, 19)" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                <h4 class="alert" style="color: rgb(212, 183, 19) !important;">¡ALERTA!</h4>
+                <h class="leyenda" id="leyenda_T2"></h>
+            </div>
+        </div>
+        <!--/. TERMINA ALERTA -->
+
+        <!--/. EMPIEZA ALERTA H-->
+        <div class="span3">
+            <div class="alert oculto" id="ALERTA_H">
+                <svg xmlns="http://www.w3.org/2000/svg" id="warning_H" width="50" height="50" fill="#b94a48" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                <h4 class="alert" style="color: #b94a48 !important;">¡ALERTA!</h4>
+                <h class="leyenda" id="leyenda_H"></h>
+            </div>
+            <div class="alert oculto" id="ALERTA_H2">
+                <svg xmlns="http://www.w3.org/2000/svg" id="warning_H2" width="50" height="50" fill="rgb(212, 183, 19)" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                <h4 class="alert" style="color: rgb(212, 183, 19) !important;">¡ALERTA!</h4>
+                <h class="leyenda" id="leyenda_H2"></h>
+            </div>
+        </div>
+        <!--/. TERMINA ALERTA -->
+
+        <!--/. EMPIEZA ALERTA I -->
+        <div class="span3">
+            <div class="alert oculto" id="ALERTA_I">
+                <svg xmlns="http://www.w3.org/2000/svg" id="warning_I" width="50" height="50" fill="#b94a48" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                <h4 class="alert" style="color: #b94a48 !important;">¡ALERTA!</h4>
+                <h class="leyenda" id="leyenda_I"></h>
+            </div>
+            <div class="alert oculto" id="ALERTA_I2">
+                <svg xmlns="http://www.w3.org/2000/svg" id="warning_I2" width="50" height="50" fill="rgb(212, 183, 19)" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                <h4 class="alert" style="color: rgb(212, 183, 19) !important;">¡ALERTA!</h4>
+                <h class="leyenda" id="leyenda_I2"></h>
+            </div>
+        </div>
+        <!--/. TERMINA ALERTA -->
+
+        <!--/. EMPIEZA ALERTA O -->
+        <div class="span3">
+            <div class="alert oculto" id="ALERTA_O">
+                <svg xmlns="http://www.w3.org/2000/svg" id="warning_O" width="50" height="50" fill="#b94a48" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                <h4 class="alert" style="color:#b94a48 !important;">¡ALERTA!</h4>
+                <h class="leyenda" id="leyenda_O"></h>
+            </div>
+            <div class="alert oculto" id="ALERTA_O2">
+                <svg xmlns="http://www.w3.org/2000/svg" id="warning_O2" width="50" height="50" fill="rgb(212, 183, 19)" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                <h4 class="alert" style="color: rgb(212, 183, 19) !important;">¡ALERTA!</h4>
+                <h class="leyenda" id="leyenda_O2"></h>
+            </div>
+        </div>
+        <!--/. TERMINA ALERTA -->
+    </div>
+
+    <div class="row-fluid">
+        <div class="row-fluid">
+            <!-- block -->
+            <div class="monitoreo">
+                <div class="block-content collapse in">
+
+                    <!-- EMPIEZAN GAUGES -->
+                    <div class="span3">
+                        <canvas id="TCanvas"></canvas>
+                        <div><span id="TValue">-- °C</span></div>
+                        <div class="chart-bottom-heading">
+                            <span class="label label-important">Temperatura</span>
+                        </div>
+                    </div>
+
+                    <!-- Humedad -->
+                    <div class="span3">
+                        <canvas id="HCanvas"></canvas>
+                        <div><span id="HValue">-- %</span></div>
+                        <div class="chart-bottom-heading">
+                            <span class="label label-info">Humedad</span>
+                        </div>
+                    </div>
+
+                    <!-- Iluminancia -->
+                    <div class="span3">
+                        <canvas id="ICanvas"></canvas>
+                        <div><span id="IValue">-- lux</span></div>
+                        <div class="chart-bottom-heading">
+                            <span class="label label-warning">Iluminancia</span>
+                        </div>
+                    </div>
+
+                    <!-- Oxígeno -->
+                    <div class="span3">
+                        <canvas id="OCanvas"></canvas>
+                        <div><span id="OValue">-- %</span></div>
+                        <div class="chart-bottom-heading">
+                            <span class="label label-success">Oxígeno</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- TERMINAN GAUGES -->
+            </div>
+        </div>
+
+        <div class="container-tablas">
+            <!--/. EMPIEZA TABLA ALERTAS -->
+            <div class="tabla_alertas">
+                <div class="row-fluid">
+                    <!-- block -->
+                    <div class="block">
+                        <div class="navbar navbar-inner block-header">
+                            <div class="muted pull-left" id="ultimas_alertas">Últimas Alertas</div>
+                        </div>
+                        <div class="block-content collapse in">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Última:</th>
+                                        <th>Fecha:</th>
+                                        <th>Hora:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Temperatura</th>
+                                        <td><span id="ultima_T">-</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" id="warning_T3" width="16" height="16" fill="red" class="bi bi-exclamation-triangle-fill oculto" viewBox="0 0 16 16">
+                                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>
+                                        </td>
+                                        <td id="fecha_T">-</td>
+                                        <td id="hora_T">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Humedad</th>
+                                        <td><span id="ultima_H">-</span><svg xmlns="http://www.w3.org/2000/svg" id="warning_H3" width="16" height="16" fill="red" class="bi bi-exclamation-triangle-fill oculto" viewBox="0 0 16 16">
+                                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                                          </svg></td>
+                                        <td id="fecha_H">-</td>
+                                        <td id="hora_H">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Iluminancia</th>
+                                        <td><span id="ultima_I">-</span><svg xmlns="http://www.w3.org/2000/svg" id="warning_I3" width="16" height="16" fill="red" class="bi bi-exclamation-triangle-fill oculto" viewBox="0 0 16 16">
+                                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                                          </svg></td>
+                                        <td id="fecha_I">-</td>
+                                        <td id="hora_I">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Oxígeno</th>
+                                        <td><span id="ultima_O">-</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" id="warning_O3" width="16" height="16" fill="red" class="bi bi-exclamation-triangle-fill oculto" viewBox="0 0 16 16">
+                                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>
+                                        </td>
+                                        <td id="fecha_O">-</td>
+                                        <td id="hora_O">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--/. TERMINA TABLA ALERTAS -->
+            </div>
+
+            <!--/ EMPIEZA TABLA-->
+            <div class="tabla_gral">
+                <div class="row-fluid">
+                    <!-- block -->
+                    <div class="block">
+                        <div class="navbar navbar-inner block-header">
+                            <div class="muted">Límites Configurables</div>
+                        </div>
+                        <div class="block-content collapse in">
+                            <table class="limites table-striped">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Mínimo Admitido</th>
+                                        <th>Máximo Admitido</th>
+                                        <th>Tolerancia (±)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Temperatura</th>
+                                        <td><input class="input" type="number" id="Tmin_input" step="0.001"> °C</td>
+                                        <td><input class="input" type="number" id="Tmax_input" step="0.001"> °C</td>
+                                        <td><input class="input" type="number" id="Ttol_input" step="0.001"> °C</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Humedad</th>
+                                        <td><input class="input" type="number" id="Hmin_input" step="0.01"> %</td>
+                                        <td><input class="input" type="number" id="Hmax_input" step="0.01"> %</td>
+                                        <td><input class="input" type="number" id="Htol_input" step="0.01"> %</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Iluminancia</th>
+                                        <td>
+                                            <input class="input" type="number" id="Imin_input" step="0.01"> lux</td>
+                                        <td><input class="input" type="number" id="Imax_input" step="0.01"> lux</td>
+                                        <td><input class="input" type="number" id="Itol_input" step="0.01"> lux</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Oxígeno</th>
+                                        <td><input class="input" type="number" id="Omin_input" step="0.01"> %</td>
+                                        <td><input class="input" type="number" id="Omax_input" step="0.01"> %</td>
+                                        <td><input class="input" type="number" id="Otol_input" step="0.01"> %</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                            <button class="btnEnviarLimites" id="botonlimites">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+                <!--/ TERMINA TABLA-->
+            </div>
+        </div>
+
+        <!--/.fluid-container-->
+
+        <script src="jquery-1.9.1.min.js"></script>
+        <script src="bootstrap.min.js"></script>
+        <script src="jquery.easy-pie-chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/gaugeJS@1.3.7/dist/gauge.min.js"></script>
+        <script src="scripts.js"></script>
+        <script src="funciones.js"></script>
+
+        <script>
+            // Conexión al broker MQTT
+            const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt'); // Usa un WebSocket seguro para navegador
+
+            const esp_id = getParametroESP();
+            const topico = `sensor/${esp_id}/datos`;
+            const topico_gral = `limites/${esp_id}/datos`;
+            console.log(esp_id);
+
+            if (esp_id) { // Muestra numero de esp en la barra superior
+                document.getElementById("numero_incubadora").textContent = `Incubadora ${esp_id}`;
+                document.getElementById("urlG").href = `generales2.html?esp2=${esp_id}`;
+                document.getElementById("urlT").href = `temperatura2.html?esp=${esp_id}`;
+                document.getElementById("urlH").href = `humedad2.html?esp=${esp_id}`;
+                document.getElementById("urlI").href = `iluminancia2.html?esp=${esp_id}`;
+                document.getElementById("urlO").href = `oxigeno2.html?esp=${esp_id}`;
+            }
+
+            // Cuando el cliente se conecta
+            client.on('connect', function() {
+                console.log('Conectado al broker MQTT');
+
+                // Suscribirse al tópico
+                client.subscribe(topico, function(err) {
+                    if (err) {
+                        console.log('Error al suscribirse al tema sensor');
+                    }
+                });
+                client.subscribe(topico_gral, function(err) {
+                    if (err) {
+                        console.log('Error al suscribirse al tema límites');
+                    }
+                });
+            });
+
+            //////////////////////////////////////////////////////////////////////////////////////
+
+            iniciarTabla_gral(esp_id);
+
+            // 1) Solicito los límites guardados al servidor (endpoint /limites)
+            document.addEventListener("DOMContentLoaded", function() {
+                fetch(`http://localhost:5001/limites?esp=${esp_id}`)
+                    .then(res => {
+                        console.log("✅ Respuesta completa:", res);
+                        return res.text(); // <- primero miramos el texto crudo
+                    })
+                    .then(texto => {
+                        console.log("🧾 Texto recibido:", texto);
+                        try {
+                            const data = JSON.parse(texto); // parseás vos a mano para ver si falla
+                            console.log("✅ JSON parseado:", data);
+
+                            // Solo si anduvo el parseo, asignás los límites
+                            Tmin = data.Tmin;
+                            Tmax = data.Tmax;
+                            Hmin = data.Hmin;
+                            Hmax = data.Hmax;
+                            Imin = data.Imin;
+                            Imax = data.Imax;
+                            Omin = data.Omin;
+                            Omax = data.Omax;
+                            Ttol = data.Ttol;
+                            Htol = data.Htol;
+                            Itol = data.Itol;
+                            Otol = data.Otol;
+
+                            for (const clave in data) {
+                                const input = document.getElementById(`${clave}_input`);
+                                if (input) input.value = data[clave];
+                            }
+                            gaugeT = gauges('T', 34, 42, Tmin, Tmax, Ttol);
+                            gaugeH = gauges('H', 20, 80, Hmin, Hmax, Htol);
+                            gaugeI = gauges('I', 200, 2000, Imin, Imax, Itol);
+                            gaugeO = gauges('O', 21, 100, Omin, Omax, Otol);
+
+                            recientes = obtenerDatos(esp_id);
+                            gaugeT.set(recientes.dato_T);
+                            gaugeH.set(recientes.dato_H);
+                            gaugeI.set(recientes.dato_I);
+                            gaugeO.set(recientes.dato_O);
+
+                        } catch (err) {
+                            console.error("❌ Error al parsear el JSON manualmente:", err);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("❌ Error general en fetch:", err);
+                    });
+            });
+            // 2) Al hacer clic en “Enviar Límites”, tomo los valores de los inputs
+            document.getElementById("botonlimites").addEventListener("click", () => {
+                const config = {
+                    esp: esp_id,
+                    Tmin: parseFloat(document.getElementById("Tmin_input").value),
+                    Tmax: parseFloat(document.getElementById("Tmax_input").value),
+                    Hmin: parseFloat(document.getElementById("Hmin_input").value),
+                    Hmax: parseFloat(document.getElementById("Hmax_input").value),
+                    Imin: parseFloat(document.getElementById("Imin_input").value),
+                    Imax: parseFloat(document.getElementById("Imax_input").value),
+                    Omin: parseFloat(document.getElementById("Omin_input").value),
+                    Omax: parseFloat(document.getElementById("Omax_input").value),
+                    Ttol: parseFloat(document.getElementById("Ttol_input").value),
+                    Htol: parseFloat(document.getElementById("Htol_input").value),
+                    Itol: parseFloat(document.getElementById("Itol_input").value),
+                    Otol: parseFloat(document.getElementById("Otol_input").value),
+                };
+
+                Tmin = config.Tmin;
+                Tmax = config.Tmax;
+                Hmin = config.Hmin;
+                Hmax = config.Hmax;
+                Imin = config.Imin;
+                Imax = config.Imax;
+                Omin = config.Omin;
+                Omax = config.Omax;
+                Ttol = config.Ttol;
+                Htol = config.Htol;
+                Itol = config.Itol;
+                Otol = config.Otol;
+
+                gaugeT = gauges('T', 34, 42, Tmin, Tmax, Ttol);
+                gaugeH = gauges('H', 20, 80, Hmin, Hmax, Htol);
+                gaugeI = gauges('I', 200, 2000, Imin, Imax, Itol);
+                gaugeO = gauges('O', 21, 100, Omin, Omax, Otol);
+
+                recientes = obtenerDatos(esp_id);
+                gaugeT.set(recientes.dato_T);
+                gaugeH.set(recientes.dato_H);
+                gaugeI.set(recientes.dato_I);
+                gaugeO.set(recientes.dato_O);
+
+                // 3) Publico esos límites por MQTT al tópico config/limites
+                client.publish("config/limites", JSON.stringify(config));
+                alert(`📤 Límites enviados para ESP ${esp_id}`);
+            });
+
+            //////////////////////////////////////////////////////////////////////////////////////
+
+            // Cuando recibe mensaje (cada 10 segundos)
+            client.on('message', function(topic, message) {
+                const data = JSON.parse(message.toString());
+
+                fecha_mqtt = data.fecha;
+                tiempo_mqtt = new Date(fecha_mqtt).toLocaleTimeString();
+                temperatura_mqtt = data.temperatura;
+                humedad_mqtt = data.humedad;
+                iluminancia_mqtt = data.iluminancia;
+                oxigeno_mqtt = data.oxigeno;
+                Tmin = data.Tmin;
+                Tmax = data.Tmax;
+                Hmin = data.Hmin;
+                Hmax = data.Hmax;
+                Imin = data.Imin;
+                Imax = data.Imax;
+                Omin = data.Omin;
+                Omax = data.Omax;
+                Ttol = data.Ttol;
+                Htol = data.Htol;
+                Itol = data.Itol;
+                Otol = data.Otol;
+
+                gaugeT.set(temperatura_mqtt);
+                gaugeH.set(humedad_mqtt);
+                gaugeI.set(iluminancia_mqtt);
+                gaugeO.set(oxigeno_mqtt);
+                document.getElementById("TValue").textContent = data.temperatura.toFixed(2) + " °C";
+                document.getElementById("HValue").textContent = data.humedad.toFixed(2) + " %";
+                document.getElementById("IValue").textContent = data.iluminancia.toFixed(2) + " lux";
+                document.getElementById("OValue").textContent = data.oxigeno.toFixed(2) + " %";
+
+                if (data.alarma_T === true) {
+                    document.getElementById("ALERTA_T2").classList.add("oculto");
+                    document.getElementById("warning_T2").classList.add("oculto");
+                    ultimaAlertaTemp = Date.now();
+                    document.getElementById("ALERTA_T").classList.remove("oculto");
+                    document.getElementById("warning_T").classList.remove("oculto");
+                    document.getElementById("warning_T3").classList.remove("oculto");
+                    actualizarLeyenda("#leyenda_T", data.ley_T, "Temperatura ");
+                    actualizarDato("#fecha_T", Fecha(fecha_mqtt), "");
+                    actualizarDato("#hora_T", tiempo_mqtt, "");
+                } else {
+                    document.getElementById("ALERTA_T").classList.add("oculto");
+                    document.getElementById("warning_T").classList.add("oculto");
+                    document.getElementById("warning_T3").classList.add("oculto");
+                    if ((Tmin < temperatura_mqtt && temperatura_mqtt < Tmax)) {
+                        document.getElementById("ALERTA_T2").classList.add("oculto");
+                        document.getElementById("warning_T2").classList.add("oculto");
+                    } else {
+                        document.getElementById("ALERTA_T2").classList.remove("oculto");
+                        document.getElementById("warning_T2").classList.remove("oculto");
+                    }
+                }
+                //////////////////////////////////////////////////////////////////////////////////////////////////
+
+                if (data.alarma_H === true) {
+                    document.getElementById("ALERTA_H2").classList.add("oculto");
+                    document.getElementById("warning_H2").classList.add("oculto");
+                    ultimaAlertaHum = Date.now();
+                    document.getElementById("ALERTA_H").classList.remove("oculto");
+                    document.getElementById("warning_H").classList.remove("oculto");
+                    document.getElementById("warning_H3").classList.remove("oculto");
+                    actualizarLeyenda("#leyenda_H", data.ley_H, "Humedad ");
+                    actualizarDato("#fecha_H", Fecha(fecha_mqtt), "");
+                    actualizarDato("#hora_H", tiempo_mqtt, "");
+                } else {
+                    document.getElementById("ALERTA_H").classList.add("oculto");
+                    document.getElementById("warning_H").classList.add("oculto");
+                    document.getElementById("warning_H3").classList.add("oculto");
+                    if ((Hmin < humedad_mqtt && humedad_mqtt < Hmax)) {
+                        document.getElementById("ALERTA_H2").classList.add("oculto");
+                        document.getElementById("warning_H2").classList.add("oculto");
+                    } else {
+                        document.getElementById("ALERTA_H2").classList.remove("oculto");
+                        document.getElementById("warning_H2").classList.remove("oculto");
+                    }
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////
+
+                if (data.alarma_I === true) {
+                    document.getElementById("ALERTA_I2").classList.add("oculto");
+                    document.getElementById("warning_I2").classList.add("oculto");
+                    ultimaAlertaLuz = Date.now();
+                    document.getElementById("warning_I").classList.remove("oculto");
+                    document.getElementById("ALERTA_I").classList.remove("oculto");
+                    document.getElementById("warning_I3").classList.remove("oculto");
+                    actualizarLeyenda("#leyenda_I", data.ley_I, "Iluminancia ");
+                    actualizarDato("#fecha_I", Fecha(fecha_mqtt), "");
+                    actualizarDato("#hora_I", tiempo_mqtt, "");
+                } else {
+                    document.getElementById("ALERTA_I").classList.add("oculto");
+                    document.getElementById("warning_I").classList.add("oculto");
+                    document.getElementById("warning_I3").classList.add("oculto");
+                    if ((Imin < iluminancia_mqtt && iluminancia_mqtt < Imax)) {
+                        document.getElementById("ALERTA_I2").classList.add("oculto");
+                        document.getElementById("warning_I2").classList.add("oculto");
+                    } else {
+                        document.getElementById("ALERTA_I2").classList.remove("oculto");
+                        document.getElementById("warning_I2").classList.remove("oculto");
+                    }
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////
+
+                if (data.alarma_O === true) {
+                    document.getElementById("ALERTA_O2").classList.add("oculto");
+                    document.getElementById("warning_O2").classList.add("oculto");
+                    ultimaAlertaOx = Date.now();
+                    document.getElementById("ALERTA_O").classList.remove("oculto");
+                    document.getElementById("warning_O").classList.remove("oculto");
+                    document.getElementById("warning_O3").classList.remove("oculto");
+                    actualizarLeyenda("#leyenda_O", data.ley_O, "Oxígeno ");
+                    actualizarDato("#fecha_O", Fecha(fecha_mqtt), "");
+                    actualizarDato("#hora_O", tiempo_mqtt, "");
+                } else {
+                    document.getElementById("ALERTA_O").classList.add("oculto");
+                    document.getElementById("warning_O").classList.add("oculto");
+                    document.getElementById("warning_O3").classList.add("oculto");
+                    if ((Omin < oxigeno_mqtt && oxigeno_mqtt < Omax)) {
+                        document.getElementById("ALERTA_O2").classList.add("oculto");
+                        document.getElementById("warning_O2").classList.add("oculto");
+                    } else {
+                        document.getElementById("ALERTA_O2").classList.remove("oculto");
+                        document.getElementById("warning_O2").classList.remove("oculto");
+                    }
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////
+
+                actualizarTiemposAlertas(esp_id);
+            })
+        </script>
+
+</body>
+
+</html>

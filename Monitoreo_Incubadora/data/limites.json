@@ -1,0 +1,31 @@
+{
+    "1": {
+        "Tmin": 36,
+        "Tmax": 38,
+        "Hmin": 85,
+        "Hmax": 95,
+        "Imin": 500,
+        "Imax": 2000,
+        "Omin": 78,
+        "Omax": 91,
+        "Ttol": 1,
+        "Htol": 1,
+        "Itol": 1,
+        "Otol": 1
+    },
+    "2": {
+        "Tmin": 36,
+        "Tmax": 38,
+        "Hmin": 85,
+        "Hmax": 95,
+        "Imin": 500,
+        "Imax": 2000,
+        "Omin": 78,
+        "Omax": 91,
+        "Ttol": 1,
+        "Htol": 1,
+        "Itol": 1,
+        "Otol": 1
+    }
+
+}

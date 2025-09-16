@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html class="no-js">
+
+<head>
+    <title>Temperatura</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <base href="">
+    <link href="bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+    <link href="jquery.easy-pie-chart.css" rel="stylesheet" media="screen">
+    <link href="styles.css" rel="stylesheet" media="screen">
+    <script src="modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <!-- MQTT.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.js"></script>
+    <!-- Chart.js -->
+</head>
+
+<body>
+    <!-- EMPIEZA BARRA SUPERIOR -->
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <h>
+                    <div id="numero_incubadora" class="brand">Incubadora </div>
+                </h>
+                <div class="nav-collapse collapse">
+                    <ul class="nav pull-right">
+                        <li class="dropdown">
+                            <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                              </svg> Usuario <i class="caret"></i>
+
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a tabindex="-1" href="login.html">Cerrar sesión    <h><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="darkslategrey" class="bi bi-arrow-bar-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8m-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5"/>
+                                      </svg></h></a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="navbar-inner">
+                    <div class="center-icon">
+                        <a href="home2.html" id="home"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill=darkslategrey class="bi bi-house-fill" viewBox="0 0 16 16">
+                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/>
+                        <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293z"/>
+                      </svg></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--/. EMPIEZA BARRA -->
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
+                <li class="">
+                    <a id="urlG" href=""><svg xmlns="http://www.w3.org/2000/svg" width="18 " height="18 " fill="currentColor " class="bi bi-info-circle " viewBox="0 0 16 16 ">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16 "/>
+                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2
+        0 1 1 0 0 1 2 0 "/>
+                          </svg>   Generales</a>
+                </li>
+                <li class="active">
+                    <a id="urlT" href=""><svg xmlns="http://www.w3.org/2000/svg " width="20 " height="20 " fill="currentColor " class="bi bi-thermometer-half " viewBox="0 0 16 16 ">
+                            <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415 "/>
+                            <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1 "/>
+                          </svg>   Temperatura</a>
+                </li>
+                <li class=" ">
+                    <a id="urlH" href=""><svg xmlns="http://www.w3.org/2000/svg " width="20 " height="20 " fill="currentColor " class="bi bi-droplet " viewBox="0 0 16 16 ">
+                            <path fill-rule="evenodd " d="M7.21.8C7.69.295 8 0 8 0q.164.544.371 1.038c.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8m.413 1.021A31 31 0 0 0 5.794 3.99c-.726.95-1.436
+        2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z "/>
+                            <path fill-rule="evenodd " d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87z "/>
+                          </svg>   Humedad</a>
+                </li>
+                <li class=" ">
+                    <a id="urlI" href=""><svg xmlns="http://www.w3.org/2000/svg " width="20 " height="20 " fill="currentColor " class="bi bi-lightbulb " viewBox="0 0 16 16 ">
+                            <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0
+        0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1 "/>
+                          </svg>    Iluminancia </a>
+                </li>
+                <li class=" ">
+                    <a id="urlO" href=""><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-lungs" viewBox="0 0 16 16">
+                        <path d="M8.5 1.5a.5.5 0 1 0-1 0v5.243L7 7.1V4.72C7 3.77 6.23 3 5.28 3c-.524 0-1.023.27-1.443.592-.431.332-.847.773-1.216 1.229-.736.908-1.347 1.946-1.58 2.48-.176.405-.393 1.16-.556 2.011-.165.857-.283 1.857-.241 2.759.04.867.233 1.79.838 2.33.67.6 1.622.556 2.741-.004l1.795-.897A2.5 2.5 0 0 0 7 11.264V10.5a.5.5 0 0 0-1 0v.764a1.5 1.5 0 0 1-.83 1.342l-1.794.897c-.978.489-1.415.343-1.628.152-.28-.25-.467-.801-.505-1.63-.037-.795.068-1.71.224-2.525.157-.82.357-1.491.491-1.8.19-.438.75-1.4 1.44-2.25.342-.422.703-.799 1.049-1.065.358-.276.639-.385.833-.385a.72.72 0 0 1 .72.72v3.094l-1.79 1.28a.5.5 0 0 0 .58.813L8 7.614l3.21 2.293a.5.5 0 1 0 .58-.814L10 7.814V4.72a.72.72 0 0 1 .72-.72c.194 0 .475.11.833.385.346.266.706.643 1.05 1.066.688.85 1.248 1.811 1.439 2.249.134.309.334.98.491 1.8.156.814.26 1.73.224 2.525-.038.829-.224 1.38-.505 1.63-.213.19-.65.337-1.628-.152l-1.795-.897A1.5 1.5 0 0 1 10 11.264V10.5a.5.5 0 0 0-1 0v.764a2.5 2.5 0 0 0 1.382 2.236l1.795.897c1.12.56 2.07.603 2.741.004.605-.54.798-1.463.838-2.33.042-.902-.076-1.902-.24-2.759-.164-.852-.38-1.606-.558-2.012-.232-.533-.843-1.571-1.579-2.479-.37-.456-.785-.897-1.216-1.229C11.743 3.27 11.244 3 10.72 3 9.77 3 9 3.77 9 4.72V7.1l-.5-.357z"/>
+                      </svg>Oxígeno </a>
+                </li>
+            </ul>
+            <!--/. TERMINA BARRA -->
+        </div>
+    </div>
+
+    <!--/. EMPIEZA TABLA HISTORIAL TEMPERATURA -->
+    <div class="tabla_historial">
+        <div class="row-fluid">
+            <div class="block">
+                <div class="navbar navbar-inner block-header">
+                    <div class="muted pull-left">Historial Alarmas: Temperatura</div>
+                </div>
+                <div class="block-content collapse in">
+                    <table class="table table-striped" id="historial">
+                        <thead>
+                            <tr>
+                                <th>Valor</th>
+                                <th>Tipo:</th>
+                                <th>Fecha:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="valor_1">-</td>
+                                <td id="tipo_1">-</td>
+                                <td id="fecha_1">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_2">-</td>
+                                <td id="tipo_2">-</td>
+                                <td id="fecha_2">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_3">-</td>
+                                <td id="tipo_3">-</td>
+                                <td id="fecha_3">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_4">-</td>
+                                <td id="tipo_4">-</td>
+                                <td id="fecha_4">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_5">-</td>
+                                <td id="tipo_5">-</td>
+                                <td id="fecha_5">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_6">-</td>
+                                <td id="tipo_6">-</td>
+                                <td id="fecha_6">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_7">-</td>
+                                <td id="tipo_7">-</td>
+                                <td id="fecha_7">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_8">-</td>
+                                <td id="tipo_8">-</td>
+                                <td id="fecha_8">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_9">-</td>
+                                <td id="tipo_9">-</td>
+                                <td id="fecha_9">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_10">-</td>
+                                <td id="tipo_10">-</td>
+                                <td id="fecha_10">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_11">-</td>
+                                <td id="tipo_11">-</td>
+                                <td id="fecha_11">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_12">-</td>
+                                <td id="tipo_12">-</td>
+                                <td id="fecha_12">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_13">-</td>
+                                <td id="tipo_13">-</td>
+                                <td id="fecha_13">-</td>
+                            </tr>
+                            <tr>
+                                <td id="valor_14">-</td>
+                                <td id="tipo_14">-</td>
+                                <td id="fecha_14">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--/. TERMINA TABLA HISTORIAL TEMPERATURA-->
+    </div>
+
+    <!--/. EMPIEZA GRÁFICO TEMPERATURA -->
+    <div>
+        <div class="row-fluid" id="grafico">
+            <div class="block" id="historial_parametro">
+                <div class="navbar navbar-inner block-header">
+                    <div class="muted pull-left">Historial Temperatura</div>
+                </div>
+                <canvas id="grafico_T"></canvas>
+            </div>
+        </div>
+    </div>
+    <!--/. TERMINA GRÁFICO TEMPERATURA -->
+
+    <div class="container-tablas-parametro">
+        <!--/. EMPIEZA TABLA ALERTAS -->
+        <div class="tabla_alertas-parametro">
+            <div class="row-fluid">
+                <div class="block">
+                    <div class="navbar navbar-inner block-header">
+                        <div class="muted pull-left">Últimas Alertas</div>
+                    </div>
+                    <div class="block-content collapse in">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Fecha:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="fila_T">
+                                    <th>Temperatura</th>
+                                    <td><span id="fecha_T">-</span></td>
+                                </tr>
+                                <tr id="fila_H">
+                                    <th>Humedad</th>
+                                    <td><span id="fecha_H">-</span></td>
+                                </tr>
+                                <tr id="fila_I">
+                                    <th>Iluminancia</th>
+                                    <td><span id="fecha_I">-</span></td>
+                                </tr>
+                                <tr id="fila_O">
+                                    <th>Oxígeno</th>
+                                    <td><span id="fecha_O">-</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!--/. TERMINA TABLA ALERTAS -->
+        </div>
+
+        <!--/. EMPIEZA TABLA ESTADISTICAS -->
+        <div class="tabla_estadisticas">
+            <div class="row-fluid">
+                <div class="block">
+                    <div class="navbar navbar-inner block-header">
+                        <div class="muted pull-left">Estadísticas Temperatura</div>
+                    </div>
+                    <div class="block-content collapse in">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th>N° Alertas</th>
+                                    <td id="N_T">-</td>
+                                </tr>
+                                <tr>
+                                    <th>Mínima</th>
+                                    <td><span id="min_T">-</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Máxima</th>
+                                    <td id="max_T">-</td>
+                                </tr>
+                                <tr>
+                                    <th>Media</th>
+                                    <td id="media_T">-</td>
+                                </tr>
+                                <tr>
+                                    <th>Mediana</th>
+                                    <td id="mediana_T">-</td>
+                                </tr>
+                                <tr>
+                                    <th>Desvío Estándar</th>
+                                    <td id="desvio_T">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!--/. TERMINA TABLA ESTADISTICAS -->
+        </div>
+
+        <!--/.fluid-container-->
+
+        <script src="jquery-1.9.1.min.js"></script>
+        <script src="bootstrap.min.js"></script>
+        <script src="jquery.easy-pie-chart.js"></script>
+        <script src="scripts.js"></script>
+        <script src="funciones.js"></script>
+
+        <script>
+            const esp_id = getParametroESP();
+            const topico = `sensor/${esp_id}/datos`;
+            if (esp_id) { // Muestra numero de esp en la barra superior
+                document.getElementById("numero_incubadora").textContent = `Incubadora ${esp_id}`;
+                document.getElementById("urlG").href = `generales2.html?esp=${esp_id}`;
+                document.getElementById("urlT").href = `temperatura2.html?esp=${esp_id}`;
+                document.getElementById("urlH").href = `humedad2.html?esp=${esp_id}`;
+                document.getElementById("urlI").href = `iluminancia2.html?esp=${esp_id}`;
+                document.getElementById("urlO").href = `oxigeno2.html?esp=${esp_id}`;
+            }
+
+            // Conexión al broker MQTT
+            const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt'); // Usa un WebSocket seguro para navegador
+
+            // Cuando el cliente se conecta
+            client.on('connect', function() {
+                console.log('Conectado al broker MQTT');
+
+                // Suscribirse al tópico
+                client.subscribe(topico, function(err) {
+                    if (err) {
+                        console.log('Error al suscribirse al tema');
+                    }
+                });
+            });
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+            // Crea el gráfico 
+            const ctx = document.getElementById("grafico_T").getContext("2d");
+            const chart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: [], // horas
+                    datasets: [{
+                        label: "Temperatura (°C)",
+                        data: [],
+                        borderColor: "rgb(255, 99, 132)",
+                        backgroundColor: "rgba(255, 99, 132, 0.2)",
+                        pointBackgroundColor: [],
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'minute',
+                                stepSize: 5,
+                                displayFormats: {
+                                    minute: 'HH:mm'
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: "Hora"
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                stepSize: 0.1
+                            },
+                            title: {
+                                display: true,
+                                text: "Temperatura (°C)"
+                            }
+                        }
+                    }
+                }
+            });
+
+            actualizarHistorial(esp_id, "historial_T", temperatura_mqtt, fecha_mqtt, tipo_mqtt, " °C");
+            actualizarGrafico(esp_id, "datos_T", "temperatura_grafico", temperatura_mqtt, fecha_mqtt);
+            iniciarTabla_Parametro(esp_id);
+            iniciarEstadistica_Parametro(esp_id, "historial_T", "temperatura", "T", " °C");
+            /////////////////////////////////////////////////////////////////////////////////
+
+            // Cuando recibe mensaje (cada 5 segundos)
+            client.on('message', function(topic, message) {
+
+                // Extraer el número de sensor desde el tópico
+                const data = JSON.parse(message.toString());
+
+                fecha_mqtt = data.fecha;
+                tiempo_mqtt = new Date(fecha_mqtt).toLocaleTimeString();
+                temperatura_mqtt = data.temperatura;
+                humedad_mqtt = data.humedad;
+                iluminancia_mqtt = data.iluminancia;
+                oxigeno_mqtt = data.oxigeno;
+                alarma_T_mqtt = data.alarma_T;
+                alarma_H_mqtt = data.alarma_H;
+                alarma_I_mqtt = data.alarma_I;
+                alarma_O_mqtt = data.alarma_O;
+                tipo_mqtt = data.ley_T;
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////
+
+                // Actualizar tablas y grafico
+                actualizarAlertas(alarma_T_mqtt, fecha_mqtt, "fila_T", "#fecha_T");
+                actualizarAlertas(alarma_H_mqtt, fecha_mqtt, "fila_H", "#fecha_H");
+                actualizarAlertas(alarma_I_mqtt, fecha_mqtt, "fila_I", "#fecha_I");
+                actualizarAlertas(alarma_O_mqtt, fecha_mqtt, "fila_O", "#fecha_O");
+                actualizarGrafico(esp_id, "datos_T", "temperatura_grafico", temperatura_mqtt, fecha_mqtt);
+                actualizarHistorial(esp_id, "historial_T", temperatura_mqtt, fecha_mqtt, tipo_mqtt, " °C");
+                iniciarEstadistica_Parametro(esp_id, "historial_T", "temperatura", "T", " °C");
+            })
+        </script>
+</body>
+
+</html>

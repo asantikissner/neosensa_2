@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS (local) -->
+    <link href="bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+
+    <style>
+        /* botón centrado */
+        
+        .center-action {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 12px;
+        }
+        
+        .btn-center {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #d2d1d1;
+            background: #f7f7f7;
+            cursor: pointer;
+            font-weight: 400;
+            color: rgb(116, 108, 108);
+        }
+        
+        #home-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+            padding: 16px;
+            margin-top: -20px;
+            /* <-- bajé de 72px a 48px */
+        }
+        
+        .incubadora-card {
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            background: #fff;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        
+        .incubadora-card h4 {
+            margin: 0;
+        }
+        
+        .incubadora-card.conectada {
+            border: 2px solid rgba(10, 200, 120, 0.3);
+        }
+        
+        .incubadora-card.desconectada {
+            opacity: 0.7;
+            filter: grayscale(0.05);
+            border: 2px dashed rgba(200, 50, 50, 0.1);
+        }
+        /* 🚨 Nuevo: conectada con alarma */
+        
+        .incubadora-card.conectada.alarma {
+            border: 2px solid #C33;
+            /* rojo */
+        }
+        
+        .estado {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .estado.conectada {
+            color: #0A8;
+        }
+        
+        .estado.desconectada {
+            color: #C33;
+        }
+        
+        .valores {
+            margin-top: 8px;
+            line-height: 1.3;
+            font-size: 14px;
+        }
+        
+        .footer-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        /* estilos para parámetros en alarma */
+        
+        .alarm {
+            color: #C33;
+            font-weight: 700;
+        }
+        
+        .alarm small {
+            color: #C33;
+            font-weight: 700;
+        }
+        /* mejorar visibilidad de unidad en alarma */
+        
+        .alarm .unit {
+            margin-left: 6px;
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+        /* ajustes navbar */
+        
+        .navbar {
+            background: #fff !important;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            color: rgb(28, 27, 27);
+        }
+        
+        .navbar .navbar-inner {
+            padding-bottom: 12px;
+            /* más espacio abajo */
+        }
+        
+        .navbar .brand {
+            margin-top: 10px;
+            margin-bottom: -10px;
+        }
+        
+        .navbar .nav>li>a {
+            margin-top: 4px;
+            /* bajamos el Usuario para que quede alineado */
+        }
+        
+        .dropdown-menu {
+            min-width: 160px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                </a>
+
+                <div class="brand" style="color:#545353; font-size:18px; font-weight:700; ">
+                    NeoSensa - Home
+                </div>
+
+                <!-- botón centrado -->
+                <div class="center-action">
+                    <button id="download_xlsx_btn" class="btn-center" title="Descargar todos los CSV en un Excel (.xlsx)">
+            Descargar Base de Datos
+          </button>
+                </div>
+
+                <div class="nav-collapse collapse" style="float:right;">
+                    <ul class="nav pull-right">
+                        <li class="dropdown">
+                            <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg> Usuario
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="login.html">Cerrar sesión</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="home-container"></div>
+
+    <!-- jQuery + bootstrap JS (para dropdown) -->
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+
+    <script>
+        const pollInterval = 10000;
+        const disconnectThreshold = 30000;
+        const lastSeen = {};
+
+        function crearTarjetaSimple(idx) {
+            const container = document.getElementById("home-container");
+            const id = "incubadora_card_" + idx;
+            if (document.getElementById(id)) return;
+            const card = document.createElement("div");
+            card.className = "incubadora-card desconectada";
+            card.id = id;
+            card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h4>Incubadora ${idx}</h4>
+          <span id="estado_${idx}" class="estado desconectada">desconectada</span>
+        </div>
+        <div class="valores" id="valores_${idx}">
+          <div id="rowT_${idx}">Temperatura: <span id="T_home_${idx}">--</span> <small class="unit_default">°C</small></div>
+          <div id="rowH_${idx}">Humedad: <span id="H_home_${idx}">--</span> <small class="unit_default">%</small></div>
+          <div id="rowI_${idx}">Iluminancia: <span id="I_home_${idx}">--</span> <small class="unit_default">lux</small></div>
+          <div id="rowO_${idx}">Oxígeno: <span id="O_home_${idx}">--</span> <small class="unit_default">%</small></div>
+        </div>
+        <div class="footer-card">
+          <a id="link_detalle_${idx}" href="generales2.html?esp=${idx}">Ver detalles</a>
+          <div id="ultima_${idx}">última: --</div>
+        </div>`;
+            container.appendChild(card);
+        }
+
+        function escapeHtml(s) {
+            if (s === null || s === undefined) return "";
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function renderParamHTML(label, valor, tipo, unidad) {
+            const safeVal = (valor === null || valor === undefined || valor === "--") ? "--" : escapeHtml(valor);
+            const safeLabel = escapeHtml(label);
+            const safeUnit = escapeHtml(unidad);
+            if (tipo && tipo !== "-") {
+                return `<span class="alarm"> <strong>${safeLabel}:</strong> <strong>${safeVal}<span class="unit"> ${safeUnit}</span></strong></span> ⚠️`;
+            } else {
+                return `<span><strong>${safeLabel}:</strong> ${safeVal} <small class="unit_default">${safeUnit}</small></span>`;
+            }
+        }
+
+        function evaluateInfoFlags(info) {
+            // devuelve {alarmActive: bool, connected: bool}
+            let alarmActive = false;
+            if (!info) return {
+                alarmActive: false,
+                connected: false
+            };
+            ["historial_T", "historial_H", "historial_I", "historial_O"].forEach(k => {
+                if (info[k] && Array.isArray(info[k]) && info[k].length) {
+                    try {
+                        const t = info[k][0].tipo;
+                        if (t && t !== "-") alarmActive = true;
+                    } catch (e) {}
+                }
+            });
+            let connected = false;
+            if (info.ultimo_timestamp) {
+                const ts = new Date(info.ultimo_timestamp).getTime();
+                if (!isNaN(ts) && (Date.now() - ts) < disconnectThreshold) connected = true;
+            } else {
+                // fallback
+                // lastSeen updated by previous loads; this rarely matters if server doesn't provide timestamp
+                const id = (info && info._id_for_client) ? info._id_for_client : null;
+                if (id && lastSeen[String(id)] && (Date.now() - lastSeen[String(id)]) < disconnectThreshold) connected = true;
+            }
+            return {
+                alarmActive,
+                connected
+            };
+        }
+
+        function actualizarTarjeta(idx, info) {
+            crearTarjetaSimple(idx);
+            const card = document.getElementById("incubadora_card_" + idx);
+            const estadoEl = document.getElementById("estado_" + idx);
+            const ultimaEl = document.getElementById("ultima_" + idx);
+
+            // detectar tipos de alarma de cada parámetro
+            const tipos = {
+                T: (info && info.historial_T && info.historial_T.length && info.historial_T[0].tipo) ? info.historial_T[0].tipo : "-",
+                H: (info && info.historial_H && info.historial_H.length && info.historial_H[0].tipo) ? info.historial_H[0].tipo : "-",
+                I: (info && info.historial_I && info.historial_I.length && info.historial_I[0].tipo) ? info.historial_I[0].tipo : "-",
+                O: (info && info.historial_O && info.historial_O.length && info.historial_O[0].tipo) ? info.historial_O[0].tipo : "-"
+            };
+
+            const flags = evaluateInfoFlags(info);
+            const conectado = flags.connected;
+
+            // estado base
+            card.classList.remove("conectada", "desconectada", "alarma");
+            card.classList.add(conectado ? "conectada" : "desconectada");
+            estadoEl.textContent = conectado ? "conectada" : "desconectada";
+            estadoEl.className = "estado " + (conectado ? "conectada" : "desconectada");
+
+            // detectar si hay alarma en algún parámetro
+            const alarma = (
+                (tipos.T && tipos.T !== "-") ||
+                (tipos.H && tipos.H !== "-") ||
+                (tipos.I && tipos.I !== "-") ||
+                (tipos.O && tipos.O !== "-")
+            );
+
+            if (conectado && alarma) {
+                card.classList.add("alarma"); // 🚨 borde rojo si hay alarma
+            }
+
+            // valores
+            const htmlT = renderParamHTML("Temperatura", (info && info.T_actual !== undefined && info.T_actual !== null) ? info.T_actual : "--", tipos.T, "°C");
+            const htmlH = renderParamHTML("Humedad", (info && info.H_actual !== undefined && info.H_actual !== null) ? info.H_actual : "--", tipos.H, "%");
+            const htmlI = renderParamHTML("Iluminancia", (info && info.I_actual !== undefined && info.I_actual !== null) ? info.I_actual : "--", tipos.I, "lux");
+            const htmlO = renderParamHTML("Oxígeno", (info && info.O_actual !== undefined && info.O_actual !== null) ? info.O_actual : "--", tipos.O, "%");
+
+            const valoresDiv = document.getElementById("valores_" + idx);
+            if (valoresDiv) {
+                valoresDiv.innerHTML = `<div>${htmlT}</div><div>${htmlH}</div><div>${htmlI}</div><div>${htmlO}</div>`;
+            }
+
+            // última actualización
+            if (info && info.ultimo_timestamp) {
+                ultimaEl.textContent = "última: " + info.ultimo_timestamp;
+                lastSeen[String(idx)] = new Date(info.ultimo_timestamp).getTime();
+            } else {
+                if (lastSeen[String(idx)]) {
+                    const ago = Math.floor((Date.now() - lastSeen[String(idx)]) / 1000);
+                    ultimaEl.textContent = "última: " + ago + "s";
+                } else {
+                    ultimaEl.textContent = "última: --";
+                }
+            }
+        }
+
+
+        async function fetchAndRender() {
+            try {
+                const res = await fetch("http://localhost:5000/datos");
+                if (!res.ok) throw new Error("no /datos");
+                const data = await res.json();
+
+                // construir lista de entries con flags
+                const entries = Object.keys(data).map(k => {
+                    const num = parseInt(k.split("_")[1]);
+                    const info = data[k];
+                    const flags = evaluateInfoFlags(info);
+                    return {
+                        key: k,
+                        num,
+                        info,
+                        alarmActive: flags.alarmActive,
+                        connected: flags.connected
+                    };
+                });
+
+                // ordenar por prioridad:
+                // 1) alarmActive (desc true first)  2) disconnected  3) ok
+                // implementamos una clave: alarm -> 0, disconnected -> 1, ok -> 2
+                entries.sort((a, b) => {
+                    const group = x => x.alarmActive ? 0 : (x.connected ? 2 : 1);
+                    const ga = group(a),
+                        gb = group(b);
+                    if (ga !== gb) return ga - gb;
+                    return a.num - b.num;
+                });
+
+                // render en ese orden
+                // limpiar y volver a crear (mantenemos crearTarjetaSimple idempotente)
+                const container = document.getElementById("home-container");
+                container.innerHTML = "";
+                for (const e of entries) {
+                    // renderizamos cada tarjeta en el orden deseado
+                    actualizarTarjeta(e.num, e.info);
+                }
+
+            } catch (err) {
+                console.warn("Error fetchAndRender:", err);
+            }
+        }
+
+        // descarga Excel al hacer click (usa /download_xlsx)
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("download_xlsx_btn").addEventListener("click", async function() {
+                try {
+                    const resp = await fetch("http://localhost:5000/download_xlsx");
+                    if (!resp.ok) {
+                        alert("Error al generar Excel en el servidor.");
+                        return;
+                    }
+                    const cd = resp.headers.get('content-disposition') || '';
+                    let filename = "incubadoras.xlsx";
+                    const m = /filename\*=UTF-8''([^;]+)/.exec(cd) || /filename="?([^";]+)"?/.exec(cd);
+                    if (m && m[1]) filename = decodeURIComponent(m[1]);
+
+                    const blob = await resp.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                } catch (e) {
+                    console.error("Error descargando xlsx:", e);
+                    alert("Error descargando archivo.");
+                }
+            });
+
+            // primer fetch y loop
+            fetchAndRender();
+            setInterval(fetchAndRender, pollInterval);
+        });
+    </script>
+</body>
+
+</html>

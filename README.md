@@ -1,1 +1,5 @@
-# neosensa_2
+# neosensa
+
+El siguiente repositorio contiene el código correspondiente al proyecto NeoSensa. El mismo busca monitorear en tiempo real parámetros ambientales de incubadoras neonatales y enviar la información sensada (iluminancia, porcentaje de oxígeno, temperatura y humedad) a una GUI web comunicada con el módulo arduino de la incubadora mediante protocolo MQTT. En caso de que alguno de los parámetros sensados se salga de control (considerando los límites y la tolerancia seteados para cada variable por el usuario), se emiten alertas visuales y una alerta sonora mediante un buzzer. Además de en la interfaz web, las mediciones realizadas por el módulo ESP32 pueden verse en tiempo real a través de un display OLED.  
+
+La versión actual colecta los datos captados por un único ESP32 y simula los datos provenientes de otra "incubadora". Las alertas disparadas tanto por el ESP32 como por la simulación se almacenan a nivel local en una planilla Excel (una hoja por "incubadora"). En un futuro se espera diseñar una base de datos relacional que reemplace a esta planilla de cálculo, asi como también incorporar nuevos módulos ESP32 de modo de que la interfaz web funcione como central de monitoreo de una unidad de neonatología. Además, se espera poder validar a los usuarios mediante contraseñas y/o ID profesional 
