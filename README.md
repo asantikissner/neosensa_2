@@ -1,4 +1,4 @@
-# neosensa
+# neosensa - Interfaz de Monitoreo de Incubadoras Neonatales
 
 El siguiente repositorio contiene el código correspondiente al proyecto NeoSensa de la materia Instrumentación Biomédica II. Este proyecto busca monitorear en tiempo real, y utilizando como controlador un módulo ESP32 de Arduino, variables ambientales de incubadoras neonatales.
 Cada incubadora cuenta con una placa ubicada dentro del compartimento del paciente y consistente en un módulo Arduino y los distintos sensores. Esta placa se encuentra conectada a otra colocada en el exterior del compartimento, consistente en un display OLED y un buzzer controlable mediante un pulsador.
