@@ -42,9 +42,10 @@ El proyecto propone una solución basada en sensores, ESP32 y una interfaz gráf
 
 ## Contenido del repositorio
 
-- Código del sistema de monitoreo 
-- Desarrollo del proyecto de instrumentación
-- Implementación de adquisición, comunicación y visualización de datos
+- Código del sistema de monitoreo (scr/main.cpp)
+- Desarrollo de la interfaz gráfica (data/XXX.html)
+- Implementación de adquisición, comunicación y visualización de datos (data/servidor_flask_csv.py)
+- Simulación de datos (scripts/mqtt_simulacion2_csv.py)
 
 ## Alcance
 
