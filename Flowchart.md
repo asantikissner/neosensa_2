@@ -16,7 +16,7 @@ flowchart LR
     A[Hardware<br/>ESP32 + sensores + OLED/buzzer] --> B[Comunicación<br/>MQTT]
     B --> C[Servidor MQTT<br/>+ simulación]
     C --> D[Procesamiento<br/>de datos y alarmas]
-    D --> E[Almacenamiento<br/>historial por incubadora]
+    D --> E[Almacenamiento<br/>historial por incubadora .csv]
     E --> F[Servidor web]
     F --> G[GUI / Central de monitoreo]
 
@@ -24,7 +24,7 @@ flowchart LR
     G --> I[Detalle por incubadora]
     I --> J[Configuración de límites<br/>y tolerancias]
     I --> K[Historial, gráficos<br/>y estadísticas]
-    G --> L[Exportación a XLSX]
+    G --> L[Descarga .xlsx]
 
     J --> C
 ```
